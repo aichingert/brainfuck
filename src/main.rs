@@ -1,12 +1,12 @@
 use std::path::Path;
-use std::io::{self, Read, BufReader, BufRead};
-use std::fs::File;
+use std::io::{self, BufRead};
 
 mod scanner;
 mod token;
+mod error;
 
 use scanner::Scanner;
-
+use error::*;
 
 pub fn main() {
     let args = std::env::args().collect::<Vec<String>>();
@@ -24,7 +24,13 @@ pub fn main() {
 fn run_file<T: AsRef<Path>>(path: T) -> io::Result<()> {
     let source: &String = &std::fs::read_to_string(path)?;
 
-    run(source.as_str());
+    match run(source) {
+        Ok(_) => {},
+        Err(error) => {
+            report(error, "".to_string());
+            std::process::exit(65);
+        }
+    }
     Ok(())
 }
 
@@ -38,34 +44,25 @@ fn run_prompt() {
                 break;
             }
 
-            run(&line)
+            match run(&line) {
+                Ok(_) => {},
+                Err(error) => {
+                    report(error, "".to_string());
+                }
+            }
         } else {
             break;
         }
     }
 }
 
-fn run(source: &str) {
+fn run(source: &str) -> Result<(), BrainfuckError> {
     let scanner: Scanner = Scanner::new(*source);
     let tokens = scanner.scanTokens();
 
     for token in tokens {
         println!("{:?}", token);
     }
-}
 
-struct Brainfuck {
-    had_error: bool,
-}
-
-impl Brainfuck {
-    pub fn error(&self, line: i32, message: &String) {
-        self.report(line, &"".to_string(), message)
-    }
-    
-    pub fn report(&mut self, line: i32, location: &String, message: &String) {
-        let report: String = format!("[line {line}] Error {location}: {message}");
-        println!("{report}");
-        self.had_error = true;
-    }
+    Ok(())
 }
