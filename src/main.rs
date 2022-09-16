@@ -3,6 +3,8 @@ use std::{fs::File, io::Read};
 mod lexeme;
 mod OpCode;
 
+use lexeme::Lexeme;
+
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = std::env::args().collect();
 
@@ -14,6 +16,9 @@ fn main() -> std::io::Result<()> {
     let path: &String = &args[1];
 
     let source: &String = &std::fs::read_to_string(path)?;
+    let lexame: Lexeme = Lexeme::new(source.clone());
+
+    
 
     Ok(())
 }

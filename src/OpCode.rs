@@ -1,4 +1,4 @@
-#[derive(Debug, Partial)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum OpCode {
     Increment,
     Decrement,

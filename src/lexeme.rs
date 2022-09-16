@@ -30,11 +30,32 @@ impl Lexeme {
 
         let mut offset: usize = 0;
         for i in 0..operations.len() {
-            if operations[i] == None {
-
+            match operations[i - offset] {
+                OpCode::None => {
+                    operations.remove(i - offset);
+                    offset += 1;
+                },
+                _ => {}
             }
         }
 
         operations
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::lexeme::Lexeme;
+    use crate::OpCode::OpCode;
+
+    #[test]
+    pub fn parse_correctly() {
+        let path: &String = &"examples/test.bf".to_string();
+        let lex: Lexeme = Lexeme::new(std::fs::read_to_string(path).expect("unable to open file"));
+
+        let result: Vec<OpCode> = lex.lex();
+        let expect: Vec<OpCode> = vec![OpCode::LoopBegin, OpCode::Increment, OpCode::Increment, OpCode::LoopEnd];
+
+        assert!(result == expect)
     }
 }
