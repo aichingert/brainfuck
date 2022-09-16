@@ -4,6 +4,7 @@ mod brainfuck;
 
 use lexeme::Lexeme;
 use opcode::OpCode;
+use brainfuck::Brainfuck as bf;
 
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = std::env::args().collect();
@@ -20,5 +21,8 @@ fn main() -> std::io::Result<()> {
 
     let opcodes: Vec<OpCode> = lexame.lex();
 
+    let bf: bf = bf::new();
+
+    
     Ok(())
 }
