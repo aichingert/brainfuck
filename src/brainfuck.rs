@@ -1,9 +1,9 @@
+use std::io::Read;
 use crate::OpCode;
 
 pub struct Brainfuck {
     buffer: Vec<u8>,
-    pointer: usize,
-    instructions: Vec<Instruction>
+    pointer: usize
 }
 
 pub enum Instruction {
@@ -20,17 +20,34 @@ impl Brainfuck {
     pub fn new() -> Self {
         Self {
             buffer: vec![0; 30000],
-            pointer: 15000,
-            instructions: vec![]
+            pointer: 15000
         }
     }
 
-    pub fn run(&mut self) {
-
+    pub fn run(&mut self, instructions: &Vec<Instruction>) {
+        for instr in instructions.iter() {
+            match instr {
+                Instruction::Increment => self.buffer[self.pointer] += 1,
+                Instruction::Decrement => self.buffer[self.pointer] -= 1,
+                Instruction::PointerInc => self.pointer += 1,
+                Instruction::PointerDec => self.pointer -= 1,
+                Instruction::Write => print!("{}", self.buffer[self.pointer] as char),
+                Instruction::Read => {
+                    let mut buf: [u8; 1] = [0; 1];
+                    std::io::stdin().read_exact(&mut buf).expect("unable to read stdin");
+                    self.buffer[self.pointer] = buf[0];
+                },
+                Instruction::Loop(nested) => {
+                    while self.buffer[self.pointer] != 0 {
+                        self.run(nested)
+                    }
+                },
+            }
+        }
     }
 }
 
-fn parse(opcode: Vec<OpCode>) -> Vec<Instruction> {
+pub fn parse(opcode: &Vec<OpCode>) -> Vec<Instruction> {
     let mut program: Vec<Instruction> = Vec::new();
     let mut loop_stack: usize = 0;
     let mut loop_start: usize = 0;
@@ -68,7 +85,7 @@ fn parse(opcode: Vec<OpCode>) -> Vec<Instruction> {
                     loop_stack -= 1;
 
                     if loop_stack == 0 {
-                        program.push(Instruction::Loop(parse(opcode[loop_start + 1..i].to_vec())));
+                        program.push(Instruction::Loop(parse(&opcode[loop_start + 1..i].to_vec())));
                     }
                 }
                 _ => {}

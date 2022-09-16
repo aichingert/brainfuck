@@ -50,11 +50,13 @@ mod test {
 
     #[test]
     pub fn parse_correctly() {
-        let path: &String = &"examples/test.bf".to_string();
+        let path: &String = &"examples/parse_test.bf".to_string();
         let lex: Lexeme = Lexeme::new(std::fs::read_to_string(path).expect("unable to open file"));
 
         let result: Vec<OpCode> = lex.lex();
-        let expect: Vec<OpCode> = vec![OpCode::LoopBegin, OpCode::Increment, OpCode::Increment, OpCode::LoopEnd];
+        let expect: Vec<OpCode> = vec![
+            OpCode::LoopBegin, OpCode::LoopBegin, OpCode::Increment, OpCode::Increment, 
+            OpCode::Decrement, OpCode::Decrement, OpCode::LoopEnd, OpCode::LoopEnd];
 
         assert!(result == expect)
     }
