@@ -1,4 +1,4 @@
-use crate::OpCode::OpCode;
+use crate::opcode::OpCode;
 
 pub struct Lexeme {
     source: String
@@ -46,7 +46,7 @@ impl Lexeme {
 #[cfg(test)]
 mod test {
     use crate::lexeme::Lexeme;
-    use crate::OpCode::OpCode;
+    use crate::opcode::OpCode;
 
     #[test]
     pub fn parse_correctly() {
