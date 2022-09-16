@@ -6,6 +6,7 @@ pub struct Brainfuck {
     pointer: usize
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Instruction {
     Increment,
     Decrement,
@@ -47,12 +48,12 @@ impl Brainfuck {
     }
 }
 
-pub fn parse(opcode: &Vec<OpCode>) -> Vec<Instruction> {
+pub fn parse(opcodes: &Vec<OpCode>) -> Vec<Instruction> {
     let mut program: Vec<Instruction> = Vec::new();
     let mut loop_stack: usize = 0;
     let mut loop_start: usize = 0;
 
-    for (i, op) in opcode.iter().enumerate() {
+    for (i, op) in opcodes.iter().enumerate() {
         if loop_stack == 0 {
             let instruction = match op {
                 OpCode::PointerInc => Some(Instruction::PointerInc),
@@ -85,7 +86,7 @@ pub fn parse(opcode: &Vec<OpCode>) -> Vec<Instruction> {
                     loop_stack -= 1;
 
                     if loop_stack == 0 {
-                        program.push(Instruction::Loop(parse(&opcode[loop_start + 1..i].to_vec())));
+                        program.push(Instruction::Loop(parse(&opcodes[loop_start + 1..i].to_vec())));
                     }
                 }
                 _ => {}
@@ -98,4 +99,36 @@ pub fn parse(opcode: &Vec<OpCode>) -> Vec<Instruction> {
     }
 
     program
+}
+
+#[cfg(test)]
+mod test {
+    use crate::brainfuck::{Brainfuck, Instruction, parse};
+    use crate::opcode::OpCode;
+
+    #[test]
+    pub fn check_init() {
+        let bf: Brainfuck = Brainfuck::new();
+
+        assert!(bf.buffer.len() == 30000);
+        assert!(bf.pointer == 15000);
+    }
+
+    #[test]
+    pub fn parse_correctly() {
+        let opcodes: Vec<OpCode> = vec![OpCode::LoopBegin, OpCode::Increment, OpCode::LoopEnd];
+        let result: Vec<Instruction> = parse(&opcodes);
+
+        let expected: Vec<Instruction> = vec![Instruction::Loop(vec![Instruction::Increment])];
+
+        assert!(result == expected);
+    }
+
+    #[test]
+    #[should_panic]
+    pub fn invalid_loop() {
+        let opcodes: Vec<OpCode> = vec![OpCode::LoopBegin, OpCode::LoopBegin, OpCode::Increment, OpCode::LoopEnd];
+
+        parse(&opcodes);
+    }
 }

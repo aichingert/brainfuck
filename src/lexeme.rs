@@ -49,7 +49,7 @@ mod test {
     use crate::opcode::OpCode;
 
     #[test]
-    pub fn parse_correctly() {
+    pub fn lexeme_created_correctly() {
         let path: &String = &"examples/parse_test.bf".to_string();
         let lex: Lexeme = Lexeme::new(std::fs::read_to_string(path).expect("unable to open file"));
 
