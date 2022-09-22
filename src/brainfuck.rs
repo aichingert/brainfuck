@@ -28,8 +28,8 @@ impl Brainfuck {
     pub fn run(&mut self, instructions: &Vec<Instruction>) {
         for instr in instructions.iter() {
             match instr {
-                Instruction::Increment => self.buffer[self.pointer] += 1,
-                Instruction::Decrement => self.buffer[self.pointer] -= 1,
+                Instruction::Increment => self.buffer[self.pointer] = self.buffer[self.pointer].wrapping_add(1),
+                Instruction::Decrement => self.buffer[self.pointer] = self.buffer[self.pointer].wrapping_sub(1),
                 Instruction::PointerInc => self.pointer += 1,
                 Instruction::PointerDec => self.pointer -= 1,
                 Instruction::Write => print!("{}", self.buffer[self.pointer] as char),
