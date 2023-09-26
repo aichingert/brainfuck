@@ -9,8 +9,10 @@ pub enum Token {
     RParen,
     LParen,
 
+    Not,
+    Equals,
+
     Declare,
-    Assign,
     
     If,
     Else,
@@ -23,7 +25,7 @@ impl Lexer {
     }
 
     pub fn get_token(&mut self) -> Option<Token> {
-        while self.pointer < self.buffer.len() && self.buffer[self.pointer] == ' ' {
+        while self.pointer < self.buffer.len() && self.is_position_skipable() {
             self.pointer += 1;
         }
 
@@ -34,6 +36,8 @@ impl Lexer {
         let token = match self.buffer[self.pointer] {
             '(' => Token::LParen,
             ')' => Token::RParen,
+            '!' => Token::Not,
+            '=' => Token::Equals,
             ':' => Token::Declare,
             'a'..='z' | 'A'..='Z' => self.read_identifier(),
             _ => Token::Invalid,
@@ -45,12 +49,10 @@ impl Lexer {
 
     fn read_identifier(&mut self) -> Token {
         let mut acc = String::new();
-        let mut cur: char = self.buffer[self.pointer];
 
-        while self.pointer < self.buffer.len() && cur != ' ' && cur != '\n' {
-            acc.push(cur);
+        while self.pointer < self.buffer.len() && !self.is_position_skipable() {
+            acc.push(self.buffer[self.pointer]);
             self.pointer += 1;
-            cur = self.buffer[self.pointer];
         }
 
         match acc.as_str() {
@@ -58,5 +60,9 @@ impl Lexer {
             "else" => Token::Else,
             _ => Token::Ident(acc)
         }
+    }
+
+    fn is_position_skipable(&self) -> bool {
+        self.buffer[self.pointer] == ' ' || self.buffer[self.pointer] == '\t' || self.buffer[self.pointer] == '\n'
     }
 }
