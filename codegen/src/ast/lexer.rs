@@ -6,6 +6,8 @@ pub struct Lexer {
 #[derive(Debug)]
 pub enum Token {
     Ident(String),
+    Num(u32),
+
     RParen,
     LParen,
 
@@ -38,8 +40,12 @@ impl Lexer {
             ')' => Token::RParen,
             '!' => Token::Not,
             '=' => Token::Equals,
-            ':' => Token::Declare,
+            ':' if self.pointer + 1 < self.buffer.len() && self.buffer[self.pointer + 1] == '=' => {
+                self.pointer += 1;
+                Token::Declare
+            }
             'a'..='z' | 'A'..='Z' => self.read_identifier(),
+            '0'..='9' => self.read_number(),
             _ => Token::Invalid,
         };
         self.pointer += 1;
@@ -60,6 +66,17 @@ impl Lexer {
             "else" => Token::Else,
             _ => Token::Ident(acc)
         }
+    }
+
+    fn read_number(&mut self) -> Token {
+        let mut acc = String::new();
+
+        while self.pointer < self.buffer.len() && !self.is_position_skipable() {
+            acc.push(self.buffer[self.pointer]);
+            self.pointer += 1;
+        }
+
+        Token::Num(acc.parse().expect("a number"))
     }
 
     fn is_position_skipable(&self) -> bool {

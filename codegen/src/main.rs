@@ -17,7 +17,7 @@ fn main() -> std::io::Result<()> {
     let mut lexer: Lexer = Lexer::new(source);
 
     while let Some(token) = lexer.get_token() {
-        println!("{:?}", token);
+        print!("{:?} ", token);
     }
 
     Ok(())
