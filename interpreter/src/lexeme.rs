@@ -12,34 +12,21 @@ impl Lexeme {
     }
 
     pub fn lex(&self) -> Vec<OpCode> {
-        let mut operations: Vec<OpCode> = Vec::new();
-
-        for symbol in self.source.chars() {
-            operations.push(match symbol {
-                '>' => OpCode::PointerInc,
-                '<' => OpCode::PointerDec,
-                '+' => OpCode::Increment,
-                '-' => OpCode::Decrement,
-                '.' => OpCode::Write,
-                ',' => OpCode::Read,
-                '[' => OpCode::LoopBegin,
-                ']' => OpCode::LoopEnd,
-                _ => OpCode::None,
-            })
-        }
-
-        let mut offset: usize = 0;
-        for i in 0..operations.len() {
-            match operations[i - offset] {
-                OpCode::None => {
-                    operations.remove(i - offset);
-                    offset += 1;
-                },
-                _ => {}
-            }
-        }
-
-        operations
+        self.source.chars()
+            .map(|symbol|
+                match symbol {
+                    '>' => OpCode::PointerInc,
+                    '<' => OpCode::PointerDec,
+                    '+' => OpCode::Increment,
+                    '-' => OpCode::Decrement,
+                    '.' => OpCode::Write,
+                    ',' => OpCode::Read,
+                    '[' => OpCode::LoopBegin,
+                    ']' => OpCode::LoopEnd,
+                    _ => OpCode::None,
+                })
+            .filter(|op| *op != OpCode::None)
+            .collect::<Vec<OpCode>>()
     }
 }
 

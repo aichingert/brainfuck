@@ -62,7 +62,6 @@ pub fn parse(opcodes: &Vec<OpCode>) -> Vec<Instruction> {
                 OpCode::Decrement => Some(Instruction::Decrement),
                 OpCode::Write => Some(Instruction::Write),
                 OpCode::Read => Some(Instruction::Read),
-
                 OpCode::LoopBegin => {
                     loop_start = i;
                     loop_stack += 1;
@@ -116,10 +115,17 @@ mod test {
 
     #[test]
     pub fn parse_correctly() {
-        let opcodes: Vec<OpCode> = vec![OpCode::LoopBegin, OpCode::Increment, OpCode::LoopEnd];
+        let opcodes: Vec<OpCode> = vec![
+            OpCode::LoopBegin, 
+            OpCode::Increment, 
+            OpCode::Increment, 
+            OpCode::LoopEnd
+        ];
         let result: Vec<Instruction> = parse(&opcodes);
 
-        let expected: Vec<Instruction> = vec![Instruction::Loop(vec![Instruction::Increment])];
+        let expected: Vec<Instruction> = vec![
+            Instruction::Loop(vec![Instruction::Increment, Instruction::Increment])
+        ];
 
         assert!(result == expected);
     }
