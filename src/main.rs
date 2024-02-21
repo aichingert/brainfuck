@@ -2,7 +2,6 @@ use std::io::Read;
 
 type Stack = [u8; 30_000];
 
-#[derive(Debug)]
 enum Instr {
     Read,
     Write,
